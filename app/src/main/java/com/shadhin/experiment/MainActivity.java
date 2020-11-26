@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         setContentView(R.layout.activity_main);
 
         surfaceView = findViewById(R.id.surfaceView);
-
+        surfaceView.setBackgroundResource(R.drawable.round3);
         detector = new FaceDetector.Builder(this)
                 .setProminentFaceOnly(true) // optimize for single, relatively large face
                 .setTrackingEnabled(true) // enable face tracking
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private void setupSurfaceHolder() {
         cameraSource = new CameraSource.Builder(this, detector)
                 .setFacing(CameraSource.CAMERA_FACING_FRONT)
-                .setRequestedFps(2.0f)
+                .setRequestedFps(5.0f)
                 .setAutoFocusEnabled(true)
                 .build();
 

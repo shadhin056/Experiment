@@ -44,7 +44,7 @@ public class CustomCameraActivity extends AppCompatActivity {
         setContentView(R.layout.activity_custom_camera);
 
         surfaceView = findViewById(R.id.surfaceView);
-        surfaceView.setBackgroundResource(R.drawable.round);
+        surfaceView.setBackgroundResource(R.drawable.rec);
         detector = new FaceDetector.Builder(this)
                 .setProminentFaceOnly(true) // optimize for single, relatively large face
                 .setTrackingEnabled(true) // enable face tracking
