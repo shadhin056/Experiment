@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,20 +14,18 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.face.FaceDetector;
 import com.google.android.gms.vision.face.LargestFaceFocusingProcessor;
 import java.io.IOException;
 import java.util.ArrayList;
 import static android.Manifest.permission.CAMERA;
-
 public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback, CameraSource.PictureCallback {
 
     public static final int CAMERA_REQUEST = 101;
@@ -134,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private void setupSurfaceHolder() {
         cameraSource = new CameraSource.Builder(this, detector)
                 .setFacing(CameraSource.CAMERA_FACING_FRONT)
-                .setRequestedFps(5.0f)
+                .setRequestedFps(2.0f)
                 .setAutoFocusEnabled(true)
                 .build();
 
@@ -192,9 +191,42 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     @Override
     public void onPictureTaken(byte[] bytes) {
-        bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+       // bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         // Save or Display image as per your requirements. Here we display the image.
-        Intent intent = new Intent(this, PictureActivity.class);
-        startActivity(intent);
+        int orientation = ExifUtils.getOrientation(bytes);
+        Bitmap   bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        switch(orientation) {
+            case 90:
+                bitmap= rotateImage(bitmap, 90);
+
+                break;
+            case 180:
+                bitmap= rotateImage(bitmap, 180);
+
+                break;
+            case 270:
+                bitmap= rotateImage(bitmap, 270);
+
+                break;
+            case 0:
+                // if orientation is zero we don't need to rotate this
+                bitmap=bitmap;
+            default:
+                break;
+        }
+
+        ((ImageView) findViewById(R.id.iv_picture)).setImageBitmap(bitmap);
+        setViewVisibility(R.id.iv_picture);
+        findViewById(R.id.surfaceView).setVisibility(View.GONE);
+        findViewById(R.id.tv_capture).setVisibility(View.GONE);
+
+        //Intent intent = new Intent(this, PictureActivity.class);
+        //startActivity(intent);
+    }
+    public static Bitmap rotateImage(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(),   source.getHeight(), matrix,
+                true);
     }
 }

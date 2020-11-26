@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -23,6 +24,7 @@ import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 import com.google.android.gms.vision.face.LargestFaceFocusingProcessor;
+import com.shadhin.experiment.ExifUtils;
 import com.shadhin.experiment.R;
 import androidx.appcompat.app.AlertDialog;
 import java.io.IOException;
@@ -140,7 +142,7 @@ public class CustomCameraActivity extends AppCompatActivity {
 
     private void setupSurfaceHolder() {
         cameraSource = new CameraSource.Builder(this, detector)
-                .setFacing(CameraSource.CAMERA_FACING_FRONT)
+                .setFacing(CameraSource.CAMERA_FACING_BACK)
                 .setRequestedFps(2.0f)
                 .setAutoFocusEnabled(true)
                 .build();
@@ -185,13 +187,49 @@ public class CustomCameraActivity extends AppCompatActivity {
             cameraSource.takePicture(/*shutterCallback*/null, new CameraSource.PictureCallback() {
                 @Override
                 public void onPictureTaken(byte[] bytes) {
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                   /* Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    ((ImageView) findViewById(R.id.iv_picture)).setImageBitmap(bitmap);
+                    setViewVisibility(R.id.iv_picture);
+                    findViewById(R.id.surfaceView).setVisibility(View.GONE);
+                    findViewById(R.id.tv_capture).setVisibility(View.GONE);*/
+                    int orientation = ExifUtils.getOrientation(bytes);
+                    Bitmap   bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    switch(orientation) {
+                        case 90:
+                            bitmap= rotateImage(bitmap, 90);
+
+                            break;
+                        case 180:
+                            bitmap= rotateImage(bitmap, 180);
+
+                            break;
+                        case 270:
+                            bitmap= rotateImage(bitmap, 270);
+
+                            break;
+                        case 0:
+                            // if orientation is zero we don't need to rotate this
+
+                        default:
+                            break;
+                    }
                     ((ImageView) findViewById(R.id.iv_picture)).setImageBitmap(bitmap);
                     setViewVisibility(R.id.iv_picture);
                     findViewById(R.id.surfaceView).setVisibility(View.GONE);
                     findViewById(R.id.tv_capture).setVisibility(View.GONE);
+                    //write your code here to save bitmap
+
+
+
                 }
             });
         }
+    }
+
+    public static Bitmap rotateImage(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(),   source.getHeight(), matrix,
+                true);
     }
 }
