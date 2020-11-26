@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.shadhin.experiment.custom_camera.CustomCamera2Activity;
 import com.shadhin.experiment.custom_camera.CustomCameraActivity;
 
 public class IndexActivity extends AppCompatActivity {
