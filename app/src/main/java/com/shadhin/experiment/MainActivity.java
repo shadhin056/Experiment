@@ -214,7 +214,26 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             default:
                 break;
         }
+        if (bitmap.getWidth() >= bitmap.getHeight()){
 
+            bitmap = Bitmap.createBitmap(
+                    bitmap,
+                    bitmap.getWidth()/2 - bitmap.getHeight()/2,
+                    0,
+                    bitmap.getHeight(),
+                    bitmap.getHeight()
+            );
+
+        }else{
+
+            bitmap = Bitmap.createBitmap(
+                    bitmap,
+                    0,
+                    bitmap.getHeight()/2 - bitmap.getWidth()/2,
+                    bitmap.getWidth(),
+                    bitmap.getWidth()
+            );
+        }
         ((ImageView) findViewById(R.id.iv_picture)).setImageBitmap(bitmap);
         setViewVisibility(R.id.iv_picture);
         findViewById(R.id.surfaceView).setVisibility(View.GONE);

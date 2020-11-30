@@ -48,7 +48,7 @@ public class CustomCameraActivity extends AppCompatActivity {
         setContentView(R.layout.activity_custom_camera);
 
         surfaceView = findViewById(R.id.surfaceView);
-        surfaceView.setBackgroundResource(R.drawable.rec);
+        surfaceView.setBackgroundResource(R.drawable.crop_pic);
         detector = new FaceDetector.Builder(this)
                 .setProminentFaceOnly(true) // optimize for single, relatively large face
                 .setTrackingEnabled(true) // enable face tracking
@@ -220,7 +220,7 @@ public class CustomCameraActivity extends AppCompatActivity {
                     findViewById(R.id.surfaceView).setVisibility(View.GONE);
                     findViewById(R.id.tv_capture).setVisibility(View.GONE);
 
-                    ((ImageView) findViewById(R.id.iv_picture)).setImageBitmap(bitmap);
+                    //((ImageView) findViewById(R.id.iv_picture)).setImageBitmap(bitmap);
 
                     if (bitmap.getWidth() >= bitmap.getHeight()){
 

@@ -5,11 +5,12 @@
     android:orientation="vertical">
 
     <SurfaceView
-        android:visibility="gone"
+
         android:id="@+id/surfaceView"
-        android:layout_width="350dp"
-        android:layout_height="350dp"
+        android:layout_width="match_parent"
+        android:layout_height="450dp"
         android:layout_gravity="center"
+        android:background="@drawable/crop_pic"
           />
 
     <TextView
