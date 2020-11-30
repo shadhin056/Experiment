@@ -5,7 +5,9 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -217,9 +219,30 @@ public class CustomCameraActivity extends AppCompatActivity {
                     setViewVisibility(R.id.iv_picture);
                     findViewById(R.id.surfaceView).setVisibility(View.GONE);
                     findViewById(R.id.tv_capture).setVisibility(View.GONE);
-                    //write your code here to save bitmap
 
+                    ((ImageView) findViewById(R.id.iv_picture)).setImageBitmap(bitmap);
 
+                    if (bitmap.getWidth() >= bitmap.getHeight()){
+
+                        bitmap = Bitmap.createBitmap(
+                                bitmap,
+                                bitmap.getWidth()/2 - bitmap.getHeight()/2,
+                                0,
+                                bitmap.getHeight(),
+                                bitmap.getHeight()
+                        );
+
+                    }else{
+
+                        bitmap = Bitmap.createBitmap(
+                                bitmap,
+                                0,
+                                bitmap.getHeight()/2 - bitmap.getWidth()/2,
+                                bitmap.getWidth(),
+                                bitmap.getWidth()
+                        );
+                    }
+                    ((ImageView) findViewById(R.id.iv_picture)).setImageBitmap(bitmap);
 
                 }
             });
