@@ -1,6 +1,7 @@
 package com.shadhin.experiment.custom_camera;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -8,7 +9,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -28,9 +31,16 @@ import com.google.android.gms.vision.face.FaceDetector;
 import com.google.android.gms.vision.face.LargestFaceFocusingProcessor;
 import com.shadhin.experiment.ExifUtils;
 import com.shadhin.experiment.R;
+import com.squareup.picasso.Picasso;
+
 import androidx.appcompat.app.AlertDialog;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+
+import jp.wasabeef.picasso.transformations.CropTransformation;
 
 import static android.Manifest.permission.CAMERA;
 
@@ -41,6 +51,7 @@ public class CustomCameraActivity extends AppCompatActivity {
     private CameraSource cameraSource;
     private SurfaceHolder surfaceHolder;
     private FaceDetector detector;
+    private ImageView iv_picture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +59,7 @@ public class CustomCameraActivity extends AppCompatActivity {
         setContentView(R.layout.activity_custom_camera);
 
         surfaceView = findViewById(R.id.surfaceView);
+        iv_picture = findViewById(R.id.iv_picture);
         surfaceView.setBackgroundResource(R.drawable.crop_pic);
         detector = new FaceDetector.Builder(this)
                 .setProminentFaceOnly(true) // optimize for single, relatively large face
@@ -242,13 +254,29 @@ public class CustomCameraActivity extends AppCompatActivity {
                                 bitmap.getWidth()
                         );
                     }
-                    ((ImageView) findViewById(R.id.iv_picture)).setImageBitmap(bitmap);
+                    getImageUri(CustomCameraActivity.this,bitmap);
+
+                    Uri selectedImageURI = getImageUri(CustomCameraActivity.this,bitmap);;
+                    //   Picasso.with(MainActivity.this).load(selectedImageURI).noPlaceholder().centerCrop().fit()
+                    //         .into((ImageView) findViewById(R.id.image_display));
+                    Picasso.get().load(selectedImageURI).transform(new CropTransformation(350,400,2400,1550))
+                            //.transform(new CropCircleTransformation())
+                            .into(iv_picture);
+
+                    //((ImageView) findViewById(R.id.iv_picture)).setImageBitmap(bitmap);
 
                 }
             });
         }
     }
 
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        //String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "IMG_" + Calendar.getInstance().getTime(), null);
+        return Uri.parse(path);
+    }
     public static Bitmap rotateImage(Bitmap source, float angle) {
         Matrix matrix = new Matrix();
         matrix.postRotate(angle);
