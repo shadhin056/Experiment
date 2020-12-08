@@ -10,6 +10,7 @@ import android.widget.Button;
 import com.shadhin.experiment.custom_camera.CustomCamera2Activity;
 import com.shadhin.experiment.custom_camera.CustomCameraActivity;
 import com.shadhin.experiment.voice.VoiceCommandActivity;
+import com.shadhin.experiment.voice.VoiceCommandServiceActivity;
 
 public class IndexActivity extends AppCompatActivity {
 
@@ -40,7 +41,7 @@ public class IndexActivity extends AppCompatActivity {
         }); btnVoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(IndexActivity.this, VoiceCommandActivity.class);
+                Intent intent=new Intent(IndexActivity.this, VoiceCommandServiceActivity.class);
                 startActivity(intent);
             }
         });

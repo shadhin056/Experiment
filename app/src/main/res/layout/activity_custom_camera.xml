@@ -9,7 +9,7 @@
         android:id="@+id/surfaceView"
         android:layout_width="400dp"
         android:layout_height="400dp"
-        android:layout_gravity="center"
+        android:layout_gravity="top|center"
         android:background="@drawable/crop_pic"
           />
 

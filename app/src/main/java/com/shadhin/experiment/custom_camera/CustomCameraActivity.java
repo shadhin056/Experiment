@@ -60,7 +60,7 @@ public class CustomCameraActivity extends AppCompatActivity {
 
         surfaceView = findViewById(R.id.surfaceView);
         iv_picture = findViewById(R.id.iv_picture);
-        surfaceView.setBackgroundResource(R.drawable.crop_pic);
+        surfaceView.setBackgroundResource(R.drawable.middle);
         detector = new FaceDetector.Builder(this)
                 .setProminentFaceOnly(true) // optimize for single, relatively large face
                 .setTrackingEnabled(true) // enable face tracking
@@ -259,7 +259,7 @@ public class CustomCameraActivity extends AppCompatActivity {
                     Uri selectedImageURI = getImageUri(CustomCameraActivity.this,bitmap);;
                     //   Picasso.with(MainActivity.this).load(selectedImageURI).noPlaceholder().centerCrop().fit()
                     //         .into((ImageView) findViewById(R.id.image_display));
-                    Picasso.get().load(selectedImageURI).transform(new CropTransformation(350,400,2400,1550))
+                    Picasso.get().load(selectedImageURI).transform(new CropTransformation(2400,1550))
                             //.transform(new CropCircleTransformation())
                             .into(iv_picture);
 

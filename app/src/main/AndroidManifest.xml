@@ -19,7 +19,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Experiment">
-        <activity android:name=".voice.VoiceCommandActivity"></activity>
+        <activity android:name=".voice.VoiceCommandServiceActivity"></activity>
+        <activity android:name=".voice.VoiceCommandActivity" />
         <activity android:name=".custom_camera.CustomCamera2Activity" />
         <activity android:name=".IndexActivity">
             <intent-filter>
