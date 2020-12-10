@@ -5,6 +5,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -33,7 +34,8 @@ public class GraphicFaceTracker extends Tracker<Face> implements SensorEventList
     private int mShakeCount = 0;
     private long mLastShake;
     private long mLastForce;
-
+    private Toast toastMessage;
+    private boolean capture=false;
     public interface OnShakeListener {
         public void onShake();
     }
@@ -103,7 +105,25 @@ public class GraphicFaceTracker extends Tracker<Face> implements SensorEventList
                     mShakeCount = 0;
                     Log.d("XXX","ShakeListener mShakeListener---->"+mShakeListener);
                     blink=0;
-                    Toast.makeText(mContext, "Do not shake your phone", Toast.LENGTH_SHORT).show();
+
+
+
+                        if (toastMessage == null) {
+                            if(capture) {
+                            }else {
+                                toastMessage= Toast.makeText(mContext, "Do not shake your phone", Toast.LENGTH_SHORT);
+                                toastMessage.show();
+                            }
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    toastMessage=null;
+                                }
+                            }, 2000);
+                        }
+
+
 
                     if (mShakeListener != null) {
                         mShakeListener.onShake();
@@ -144,9 +164,16 @@ public class GraphicFaceTracker extends Tracker<Face> implements SensorEventList
 
                         blink++;
                         Log.d("XXX"+blink,blink+"");
-                    if(blink==4){
-                        Toast.makeText(mContext, "Capture", Toast.LENGTH_SHORT).show();
+                    if(blink>3){
+                        if (toastMessage!= null) {
+                            toastMessage.cancel();
+                        }
+                       // Log.d("XXX inside"+blink,blink+"");
                         mainActivity.captureImage();
+                        capture=true;
+                        toastMessage= Toast.makeText(mContext, "Capture", Toast.LENGTH_SHORT);
+                        toastMessage.show();
+                       // Toast.makeText(mContext, "Capture", Toast.LENGTH_SHORT).show();
                     }
 
                 }
