@@ -13,6 +13,8 @@ import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 
+import static android.os.Looper.getMainLooper;
+
 public class GraphicFaceTracker extends Tracker<Face> implements SensorEventListener{
 
     private static final float OPEN_THRESHOLD = 0.85f;
@@ -161,10 +163,20 @@ public class GraphicFaceTracker extends Tracker<Face> implements SensorEventList
                         if (toastMessage!= null) {
                             toastMessage.cancel();
                         }
-                       // Log.d("XXX inside"+blink,blink+"");
-                        mainActivity.captureImage();
-                        capture=true;
-                        toastMessage= Toast.makeText(mContext, "Capture", Toast.LENGTH_SHORT);
+                       Log.d("XXX insides1",blink+"");
+
+                        Handler handler = new Handler(getMainLooper());
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                mainActivity.captureImage();
+                                capture=true;
+                                Log.d("XXX insides2",blink+"");
+                            }
+                        }, 600);
+
+
+                        toastMessage= Toast.makeText(mContext, "Please wait", Toast.LENGTH_SHORT);
                         toastMessage.show();
                        // Toast.makeText(mContext, "Capture", Toast.LENGTH_SHORT).show();
                     }
