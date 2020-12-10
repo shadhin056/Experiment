@@ -99,15 +99,11 @@ public class GraphicFaceTracker extends Tracker<Face> implements SensorEventList
                     - mLastZ)
                     / diff * 10000;
             if (speed > FORCE_THRESHOLD) {
-                if ((++mShakeCount >= SHAKE_COUNT)
-                        && (now - mLastShake > SHAKE_DURATION)) {
+                if ((++mShakeCount >= SHAKE_COUNT) && (now - mLastShake > SHAKE_DURATION)) {
                     mLastShake = now;
                     mShakeCount = 0;
                     Log.d("XXX","ShakeListener mShakeListener---->"+mShakeListener);
                     blink=0;
-
-
-
                         if (toastMessage == null) {
                             if(capture) {
                             }else {
@@ -122,9 +118,6 @@ public class GraphicFaceTracker extends Tracker<Face> implements SensorEventList
                                 }
                             }, 2000);
                         }
-
-
-
                     if (mShakeListener != null) {
                         mShakeListener.onShake();
                     }
