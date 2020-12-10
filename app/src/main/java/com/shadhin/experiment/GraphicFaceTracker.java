@@ -1,21 +1,125 @@
 package com.shadhin.experiment;
 
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 
-public class GraphicFaceTracker extends Tracker<Face> {
+public class GraphicFaceTracker extends Tracker<Face> implements SensorEventListener{
 
     private static final float OPEN_THRESHOLD = 0.85f;
     private static final float CLOSE_THRESHOLD = 0.4f;
     private final MainActivity mainActivity;
     private int state = 0;
     private int blink=0;
+    private static final int FORCE_THRESHOLD = 100;
+    private static final int TIME_THRESHOLD = 100;
+    private static final int SHAKE_TIMEOUT = 100;
+    private static final int SHAKE_DURATION = 50;
+    private static final int SHAKE_COUNT = 1;
 
+    private SensorManager mSensorMgr;
+    private float mLastX = -1.0f, mLastY = -1.0f, mLastZ = -1.0f;
+    private long mLastTime;
+    private OnShakeListener mShakeListener;
+    private Context mContext;
+    private int mShakeCount = 0;
+    private long mLastShake;
+    private long mLastForce;
+
+    public interface OnShakeListener {
+        public void onShake();
+    }
+
+    public void ShakeListener(Context context) {
+
+        Log.d("XXX","ShakeListener invoked---->");
+        mContext = context;
+        resume();
+    }
+    public void setOnShakeListener(OnShakeListener listener) {
+        Log.d("XXX","ShakeListener setOnShakeListener invoked---->");
+        mShakeListener = listener;
+    }
+
+    public void resume() {
+        mSensorMgr = (SensorManager) mContext
+                .getSystemService(Context.SENSOR_SERVICE);
+        if (mSensorMgr == null) {
+            throw new UnsupportedOperationException("Sensors not supported");
+        }
+        boolean supported = false;
+        try {
+            supported = mSensorMgr.registerListener(this,
+                    mSensorMgr.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                    SensorManager.SENSOR_DELAY_GAME);
+        } catch (Exception e) {
+           // Toast.makeText(mContext, "Shaking not supported", Toast.LENGTH_LONG).show();
+        }
+
+        if ((!supported) && (mSensorMgr != null))
+            mSensorMgr.unregisterListener(this);
+    }
+
+    public void pause() {
+        if (mSensorMgr != null) {
+
+            mSensorMgr.unregisterListener(this);
+            mSensorMgr = null;
+        }
+    }
+
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() != Sensor.TYPE_ACCELEROMETER)
+            return;
+        long now = System.currentTimeMillis();
+
+        if ((now - mLastForce) > SHAKE_TIMEOUT) {
+            mShakeCount = 0;
+        }
+
+        if ((now - mLastTime) > TIME_THRESHOLD) {
+            long diff = now - mLastTime;
+            float speed = Math.abs(event.values[SensorManager.DATA_X]
+                    + event.values[SensorManager.DATA_Y]
+                    + event.values[SensorManager.DATA_Z] - mLastX - mLastY
+                    - mLastZ)
+                    / diff * 10000;
+            if (speed > FORCE_THRESHOLD) {
+                if ((++mShakeCount >= SHAKE_COUNT)
+                        && (now - mLastShake > SHAKE_DURATION)) {
+                    mLastShake = now;
+                    mShakeCount = 0;
+                    Log.d("XXX","ShakeListener mShakeListener---->"+mShakeListener);
+                    blink=0;
+                    Toast.makeText(mContext, "Do not shake your phone", Toast.LENGTH_SHORT).show();
+
+                    if (mShakeListener != null) {
+                        mShakeListener.onShake();
+                    }
+                }
+                mLastForce = now;
+            }
+            mLastTime = now;
+            mLastX = event.values[SensorManager.DATA_X];
+            mLastY = event.values[SensorManager.DATA_Y];
+            mLastZ = event.values[SensorManager.DATA_Z];
+        }
+    }
     GraphicFaceTracker(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
+        ShakeListener(this.mainActivity);
     }
 
     private void blink(float value) {
@@ -37,9 +141,12 @@ public class GraphicFaceTracker extends Tracker<Face> {
                     // Both eyes are open again
                     Log.i("Camera Demo", "blink has occurred!");
                     state = 0;
+
                         blink++;
-                    if(blink==3){
-                            mainActivity.captureImage();
+                        Log.d("XXX"+blink,blink+"");
+                    if(blink==4){
+                        Toast.makeText(mContext, "Capture", Toast.LENGTH_SHORT).show();
+                        mainActivity.captureImage();
                     }
 
                 }
